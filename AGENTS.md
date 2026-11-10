@@ -38,16 +38,23 @@ Millbank's checkout app: a React/Redux single-page checkout built on `@boldcomme
 
 ## Sensitive areas (security review required)
 
-- Payments: `src/eps`, and the payment gateway components and hooks.
-- Customer data: email, addresses, order note attributes.
-- Third-party scripts and keys (EPS, PayPal, Google/Apple Pay, Google Maps, Loqate, Bugsnag, analytics in `src/analytics`).
+- Payments: `src/eps`; `src/components/{payment,eps-payment,eps-express-payment-gateway,external-payment-gateway,external-payment-gateway-iframe,display-payment-method,display-payment-methods}`; `src/hooks/useGet*Payment*`, `src/hooks/useGetExternalPaymentGateway*`, `src/hooks/useSetExternalPaymentGatewayListener.ts`; the payment and external-payment-gateway handlers in `src/library` (e.g. `externalPaymentGateway.ts`, `addPayment.ts`, `deletePayment.ts`); `src/utils/format{Stripe,Braintree,ApplePay}*`.
+- Customer data: email, addresses and order note attributes, i.e. the address and email hooks, library actions, and `src/library/syncEmailNoteAttribute.ts`.
+- Session tokens and auth: `jwt_token` (`src/reducer/dataReducer.ts`, `src/utils/getOrderInitialization.ts`, `window.initializedOrder`), `src/hooks/useIsUserAuthenticated.ts`.
+- Error reporting and logging: `src/utils/bugReporter.ts` (Bugsnag metadata and breadcrumbs).
+- HTML or script injection sinks: `dangerouslySetInnerHTML` (`src/components/life-field-html/lifeFieldHtml.tsx`), `innerHTML` (`src/components/cart-item/cartItem.tsx`, `src/utils/renderHtmlEntities.ts`), and dynamic `<script>` injection (`src/hooks/useInitiateLoqate.ts`, `src/hooks/useInitiateGoogleAutocomplete.ts`, `src/analytics/{custom,facebook,google}Analytics.ts`).
+- Third-party scripts and keys: EPS, PayPal, Google/Apple Pay, Google Maps (key via `src/hooks/useGetAutocompleteAPIKey.ts`), Loqate (`src/constants/loqateConstants.ts`), Bugsnag (keys via `config.json`), analytics in `src/analytics`.
+- Build config and dependencies: `webpack.config.js`, `package.json`, `yarn.lock`. This bundle runs on the payment page.
+- Payment-flow changes and dependency bumps get particular scrutiny, especially bumping the pinned `@boldcommerce/checkout-frontend-library`.
 
 ## Forbidden without Dean's approval
 
 - Syncing or pulling upstream Bold changes.
 - Production reads or external API calls.
 - Editing the storefront submodule.
+- Adding a new third-party script, SDK, analytics or tracking destination, or sending customer data or session tokens to a new destination.
 - Committing secrets, keys, `config.json` or customer data, in commits, PRs or test fixtures.
+- Publishable browser-side keys already in source (e.g. Loqate) are known. Don't add new keys to source, and don't remove, rotate or move existing ones.
 
 ## Tests: known failing baseline
 
