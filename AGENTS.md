@@ -4,7 +4,7 @@ Millbank's checkout app: a React/Redux single-page checkout built on `@boldcomme
 
 ## Repo and workflow
 
-- GitHub: `deanwhillier/millbank-checkout` (private, detached from Bold's fork network; originally `bold-commerce/checkout-experience-templates`). Local clone: `~/Projects/millbank/checkout`. Base branch: `main`.
+- GitHub: `deanwhillier/millbank-checkout` (public for now, so anything committed or written in a PR is world-readable; Dean may make it private again. Detached from Bold's fork network; originally `bold-commerce/checkout-experience-templates`). Local clone: `~/Projects/millbank/checkout`. Base branch: `main`.
 - One worktree per task at `~/.herdr/worktrees/checkout/<branch>`, on a feature branch. Never edit on `main`.
 - Feature branch -> PR. Rebase onto `main`, don't merge `main` in. Nothing goes to `main` directly. Dean merges every PR.
 - Every change gets a security review, then QA, before merge.
@@ -21,7 +21,7 @@ Millbank's checkout app: a React/Redux single-page checkout built on `@boldcomme
 
 - Only the `one_page` webpack entry ships (`src/themes/one-page/init.tsx` -> `build/one_page*`). `buy_now`, `three_page` and `app_version_check` are commented out in `webpack.config.js` and unused.
 - Release: merge to `main`. The storefront team (millbank repo) then opens a PR that bumps the `checkout` submodule pointer to a commit on `main`. At deploy the storefront's `yarn build` runs `build-checkout`, which builds here and copies `build/one_page*` to `public/static/js/`.
-- The storefront's `.gitmodules` still uses the old URL `https://github.com/deanwhillier/checkout-experience-templates.git`, which GitHub redirects to `millbank-checkout`; updating it is the storefront team's call.
+- The storefront's `.gitmodules` points at `deanwhillier/millbank-checkout` (Him-Her/millbank#429); the old `checkout-experience-templates` URL redirects.
 - Checkout work never edits the storefront's `checkout/` submodule.
 
 ## Shared contracts
