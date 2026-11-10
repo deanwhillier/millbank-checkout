@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Millbank's checkout app: a React/Redux single-page checkout built on `@boldcommerce/checkout-frontend-library@0.66.0` (pinned, from npm). It runs in the browser and makes no server calls of its own. The Millbank storefront builds it and serves it as a static bundle.
+Millbank's checkout app: a React/Redux single-page checkout built on `@boldcommerce/checkout-frontend-library@0.66.0` (pinned, from npm). It has no backend of its own; it calls Bold's Checkout APIs (and EPS) from the browser. The Millbank storefront builds it and serves it as a static bundle.
 
 ## Repo and workflow
 
@@ -21,14 +21,15 @@ Millbank's checkout app: a React/Redux single-page checkout built on `@boldcomme
 
 - Only the `one_page` webpack entry ships (`src/themes/one-page/init.tsx` -> `build/one_page*`). `buy_now`, `three_page` and `app_version_check` are commented out in `webpack.config.js` and unused.
 - Release: merge to `main`. The storefront team (millbank repo) then opens a PR that bumps the `checkout` submodule pointer to a commit on `main`. At deploy the storefront's `yarn build` runs `build-checkout`, which builds here and copies `build/one_page*` to `public/static/js/`.
+- The storefront's `.gitmodules` still uses the old URL `https://github.com/deanwhillier/checkout-experience-templates.git`, which GitHub redirects to `millbank-checkout`; updating it is the storefront team's call.
 - Checkout work never edits the storefront's `checkout/` submodule.
 
 ## Shared contracts
 
 | Contract | Producer | Consumer | Where in checkout |
 |---|---|---|---|
-| Promo fields on line items: `product_data.properties.product_details` (URI-encoded JSON), `promo.{id, layerId, layerTypeName, priceOverride, rewardType (free/reduced/rebate/discount), completed}` | millbank-api (into the Bold order) | checkout | `src/components/cart-item/cartItem.tsx`, `src/components/summary-section/summarySection.tsx` (groups by `promo.id`, only `completed`), `src/components/summary-totals/summaryTotals.tsx` |
-| `millbank_checkout_email` order note attribute (validated email) | checkout (`EMAIL_NOTE_ATTR_KEY` in `src/constants/constants.ts`) | millbank-api | the write, after which shipping lines are refetched |
+| Promo fields on line items: `product_data.properties.product_details` (URI-encoded JSON), `price.{base, discount}`, `promo.{id, layerId, layerTypeName, priceOverride, rewardType (free/reduced/rebate/discount), completed}` | millbank-api (into the Bold order) | checkout | `src/components/cart-item/cartItem.tsx`, `src/components/summary-section/summarySection.tsx` (groups by `promo.id`, only `completed`), `src/components/summary-totals/summaryTotals.tsx` |
+| `millbank_checkout_email` order note attribute (validated email) | checkout (`EMAIL_NOTE_ATTR_KEY` in `src/constants/constants.ts`) | millbank-api | `src/library/syncEmailNoteAttribute.ts`: the write, then shipping lines are refetched only when the shipping address is valid and the order requires shipping |
 | Hosting: routes `/:platform/:store/experience/{thank_you,order,*}`, checkout session, `window.*` globals (README table, e.g. `initializedOrder`, `publicOrderId`), `<div id="main">` | storefront | checkout | `src/themes/one-page/init.tsx` |
 | Build artifact `build/one_page*`, copied to `public/static/js/` | checkout | storefront | `webpack.config.js` entry and output |
 
@@ -50,7 +51,7 @@ Millbank's checkout app: a React/Redux single-page checkout built on `@boldcomme
 
 ## Tests: known failing baseline
 
-`yarn test` is not green. On Node 20.11.1 jest reports 15 failed tests in 8 suites (of 1416). `taxesAmount` crashes the full run at suite level ("Converting circular structure to JSON") so its 2 failing tests aren't in that count; run alone they fail too, making 17 failing tests. Don't fix these as part of unrelated work; they are to be addressed later. A new failure outside this list is a regression.
+`yarn test` is not green. On Node 20.11.1: 15 failed tests in 7 suites, plus the `taxesAmount` suite, which fails to run (its 2 tests fail when run alone): 17 in all. Don't fix these as part of unrelated work; they are to be addressed later. A new failure outside this list is a regression.
 
 - `tests/component/cart-item/cartItem.test.tsx`
   - Testing CartItem component rendering the cart item component with a variant
