@@ -4,9 +4,9 @@ Millbank's checkout app: a React/Redux single-page checkout built on `@boldcomme
 
 ## Repo and workflow
 
-- GitHub: `deanwhillier/millbank-checkout` (public for now, so anything committed or written in a PR is world-readable; Dean may make it private again. While it's public, never describe security findings or vulnerabilities in issues, PRs or commit messages. Detached from Bold's fork network; originally `bold-commerce/checkout-experience-templates`). Local clone: `~/Projects/millbank/checkout`. Base branch: `main`.
+- GitHub: `deanwhillier/millbank-checkout` (public for now, so anything committed or written in a PR is world-readable; the repo owner may make it private again. While it's public, never describe security findings or vulnerabilities in issues, PRs or commit messages. Detached from Bold's fork network; originally `bold-commerce/checkout-experience-templates`). Local clone: `~/Projects/millbank/checkout`. Base branch: `main`.
 - One worktree per task at `~/.herdr/worktrees/checkout/<branch>`, on a feature branch. Never edit on `main`.
-- Feature branch -> PR. Rebase onto `main`, don't merge `main` in. Nothing goes to `main` directly. Dean merges every PR.
+- Feature branch -> PR. Rebase onto `main`, don't merge `main` in. Nothing goes to `main` directly. The repo owner merges every PR.
 - Every change gets a security review, then QA, before merge.
 
 ## Setup and commands
@@ -47,7 +47,7 @@ Millbank's checkout app: a React/Redux single-page checkout built on `@boldcomme
 - Build config and dependencies: `webpack.config.js`, `package.json`, `yarn.lock`. This bundle runs on the payment page.
 - Payment-flow changes and dependency bumps get particular scrutiny, especially bumping the pinned `@boldcommerce/checkout-frontend-library`.
 
-## Forbidden without Dean's approval
+## Forbidden without the repo owner's approval
 
 - Syncing or pulling upstream Bold changes.
 - Production reads or external API calls.
