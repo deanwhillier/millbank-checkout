@@ -32,6 +32,7 @@ Millbank's checkout app: a React/Redux single-page checkout built on `@boldcomme
 | `millbank_checkout_email` order note attribute (validated email) | checkout (`EMAIL_NOTE_ATTR_KEY` in `src/constants/constants.ts`) | millbank-api | `src/library/syncEmailNoteAttribute.ts`: the write, then shipping lines are refetched only when the shipping address is valid and the order requires shipping |
 | Hosting: routes `/:platform/:store/experience/{thank_you,order,*}`, checkout session, `window.*` globals (README table, e.g. `initializedOrder`, `publicOrderId`), `<div id="main">` | storefront | checkout | `src/themes/one-page/init.tsx` |
 | Build artifact `build/one_page*`, copied to `public/static/js/` | checkout | storefront | `webpack.config.js` entry and output |
+| EPG `UPDATE_STATE` payload (`jwt_token`, `public_order_id`, `application_state.customer.platform_id`), sent to Millbank's EPG iframe; millbank-api relies on these fields (PM, F-010) | checkout | millbank-api (EPG iframe) | the send sites: `src/library/externalPaymentGateway.ts` (`handleExternalPaymentGatewayInitialized`), `src/library/applicationState.ts` (`getUpdatedApplicationState`), `src/themes/one-page/pages/themePage.tsx` |
 
 - Changing any of these needs checkout sign-off. Order: producer, then checkout, then the storefront bump.
 - Don't rename the `one_page` entry or the `build/` path without coordinating; the storefront copies them by name.
