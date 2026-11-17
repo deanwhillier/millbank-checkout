@@ -1,14 +1,20 @@
 .order-total {
+    --order-total-border: 1px;
+    --order-total-padding-top: 27px;
+    --order-total-line-height: 18px;
+    --order-total-row-gap: 4px;
+    --order-total-price-line-height: 28px;
+    --order-total-price-offset: -2px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     flex-wrap: wrap;
     column-gap: 16px;
-    row-gap: 4px;
+    row-gap: var(--order-total-row-gap);
     align-items: flex-start;
     width: 100%;
-    padding: 27px 0 0;
-    border-top: 1px solid #A4A6A8;
+    padding: var(--order-total-padding-top) 0 0;
+    border-top: var(--order-total-border) solid #A4A6A8;
 }
 
 .order-total__label {
@@ -20,7 +26,7 @@
 .order-total__title {
     font-size: 12px;
     font-weight: 600;
-    line-height: 18px;
+    line-height: var(--order-total-line-height);
     letter-spacing: 0.67px;
     text-transform: uppercase;
     color: #75757A;
@@ -29,7 +35,7 @@
 .order-total__note {
     font-size: 14px;
     font-weight: 400;
-    line-height: 18px;
+    line-height: var(--order-total-line-height);
     color: #3E3B39;
 }
 
@@ -41,9 +47,9 @@
     font-family: Roboto;
     font-size: 24px;
     font-weight: 500;
-    line-height: 28px;
+    line-height: var(--order-total-price-line-height);
     color: #3E3B39;
-    margin: -2px 0 0;
+    margin: var(--order-total-price-offset) 0 0;
 }
 
 /* beat the generic form child spacing (.customer-section form > * + *) */
@@ -53,4 +59,25 @@
 
 .customer-section form > .order-total + .form-controls {
     margin-top: 29px;
+}
+
+/*
+ * Below ~430px the label and total can wrap onto two rows (always at 320px,
+ * and at 390px while the longer "(Including estimated taxes)" note shows).
+ * Reserve the wrapped height so the Complete order button doesn't move when
+ * the note switches between estimated and calculated taxes.
+ * Wrapped height = border + top padding + two label lines + row gap + total
+ * line (less its upward offset); box-sizing is border-box.
+ */
+@media only screen and (max-width: 430px) {
+    .order-total {
+        min-height: calc(
+            var(--order-total-border)
+            + var(--order-total-padding-top)
+            + 2 * var(--order-total-line-height)
+            + var(--order-total-row-gap)
+            + var(--order-total-price-line-height)
+            + var(--order-total-price-offset)
+        );
+    }
 }
