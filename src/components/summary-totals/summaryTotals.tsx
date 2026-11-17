@@ -60,7 +60,7 @@ export function SummaryTotals(props: ISummaryTotals): React.ReactElement {
     const discountSection = <SummaryLineNonExpandable
         eventName={Constants.DISCOUNTS_TOGGLE}
         name={getTerm('discounts', Constants.SUMMARY_INFO)}
-        total={0 - discountOverrideAmount}
+        total={0 - (discountOverrideAmount + totals.totalDiscounts)}
     />;
     // disable until needed
     // const discountSection = <SummaryLineExpandable

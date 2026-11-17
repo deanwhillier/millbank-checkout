@@ -1,5 +1,5 @@
 import React from 'react';
-import {SummaryTotals, CartItems, LifeFields} from 'src/components';
+import {SummaryTotals, CartItems, LifeFields, SummaryDiscountCode} from 'src/components';
 import {useCartSummary, useGetLifeFields} from 'src/hooks';
 import {LifeInputLocationConstants} from 'src/constants';
 import classNames from 'classnames';
@@ -55,6 +55,7 @@ export function SummarySection (props: ISummarySection) : React.ReactElement {
                     {/* <Price amount={totals} moneyFormatString={formattedPrice} className={'summary__cart-price'} data-testid={'summary__cart-total-price'}/> */}
                 </div>
                 {/* <SummaryTotals orderCompleted={props.orderCompleted}/> */}
+                {!props.orderCompleted && <SummaryDiscountCode />}
                 <SummaryTotals/>
                 {Object.entries(promoGroupedItems).map(([promoId, items]) => (
                     <CartItems key={promoId} line_items={items} isPromo />
