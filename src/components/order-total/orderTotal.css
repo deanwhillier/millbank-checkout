@@ -62,14 +62,17 @@
 }
 
 /*
- * Below ~430px the label and total can wrap onto two rows (always at 320px,
- * and at 390px while the longer "(Including estimated taxes)" note shows).
+ * On the checkout's mobile layout (max-width: 767px, as in onePage.css) the
+ * label and total can wrap onto two rows: always at 320px, and at wider
+ * phones when the note is the longer "(Including estimated taxes)" or the
+ * total has a thousands separator or more digits (e.g. "CAD $12,345.67").
  * Reserve the wrapped height so the Complete order button doesn't move when
- * the note switches between estimated and calculated taxes.
+ * the note or amount changes. The cost is extra space under the row when it
+ * fits on one line.
  * Wrapped height = border + top padding + two label lines + row gap + total
  * line (less its upward offset); box-sizing is border-box.
  */
-@media only screen and (max-width: 430px) {
+@media only screen and (max-width: 767px) {
     .order-total {
         min-height: calc(
             var(--order-total-border)
