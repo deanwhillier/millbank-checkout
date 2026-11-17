@@ -60,6 +60,7 @@ export * from './useGetRequiredAddressFields';
 export * from './useGetSavedAddressData';
 export * from './useGetSelectedLanguageIso';
 export * from './useGetSelectShippingLine';
+export * from './useGetSummaryTotal';
 export * from './useGetSessionExpired';
 export * from './useGetShopName';
 export * from './useGetAutocompleteService';

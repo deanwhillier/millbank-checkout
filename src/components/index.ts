@@ -36,6 +36,7 @@ export * from './field-select/fieldSelect';
 export * from './flash-error/flashError';
 export * from './footer/footer';
 export * from './form-controls/formControls';
+export * from './order-total/orderTotal';
 export * from './generic-message-section/genericMessageSection';
 export * from './guest-customer/guestCustomer';
 export * from './header-helmet/headerHelmet';

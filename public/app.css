@@ -32,6 +32,7 @@
 @import "../src/components/logged-in-customer/loggedInCustomer.css";
 @import '../src/components/navigation-heading/navigationHeading.css';
 @import '../src/components/order-recap/orderRecap.css';
+@import '../src/components/order-total/orderTotal.css';
 @import '../src/components/out-of-stock/outOfStock.css';
 @import '../src/components/overlay/overlay.css';
 @import '../src/components/payment/payment.css';

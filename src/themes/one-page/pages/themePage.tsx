@@ -9,6 +9,7 @@ import {
     Header,
     HeaderHelmet,
     LifeFields,
+    OrderTotal,
     Payment,
     ShippingAddress,
     ShippingLines,
@@ -133,6 +134,7 @@ export function ThemePage(): React.ReactElement {
                             )}
                             {paymentGatewayLifeFields.length ? <LifeFields className={'payment-gateway-life-elements'} lifeFields={paymentGatewayLifeFields}/> : null}
                             <TaxExemption />
+                            <OrderTotal/>
                             <FormControls {...{...footerProps, nextButtonDisable: !enableCompleteOrderButton}}/>
                         </form>
                     </main>

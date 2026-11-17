@@ -1,31 +1,22 @@
 import React from 'react';
 import {Constants} from 'src/constants';
-import {getTotals, getTerm} from 'src/utils';
+import {getTerm} from 'src/utils';
 // import {SummaryLineExpandable, SummaryLineNonExpandable} from 'src/components';
 import {SummaryLineNonExpandable} from 'src/components';
 import {
     useGetDiscounts,
     useGetLineItems,
-    useGetPayments,
-    useGetSelectShippingLine,
-    useGetTaxes,
-    useGetFees,
-    useGetOrderTotal,
     useGetRequiresShipping,
+    useGetSummaryTotal,
 } from 'src/hooks';
 import {ISummaryTotals} from 'src/types';
 // import {REMOVE_DISCOUNT} from 'src/action';
 
 export function SummaryTotals(props: ISummaryTotals): React.ReactElement {
     const discounts = useGetDiscounts();
-    const fees = useGetFees();
-    const payments = useGetPayments();
-    const taxes = useGetTaxes();
-    const shipping = useGetSelectShippingLine();
     const lineItems = useGetLineItems();
-    const orderTotal = useGetOrderTotal();
     const requiresShipping = useGetRequiresShipping();
-    const totals = getTotals(lineItems, payments, taxes, fees, discounts, orderTotal);
+    const {totals, shipping, taxesAreEstimated, finalTaxes, finalTotal} = useGetSummaryTotal();
 
 
     // calculate total discounts
@@ -117,9 +108,6 @@ export function SummaryTotals(props: ISummaryTotals): React.ReactElement {
     //     title={getTerm('shipping',Constants.SUMMARY_INFO)}
     // />;
 
-    const estimatedTax = Math.round((totals.totalSubtotal + shipping.amount) * 0.13 * 100) / 100; // assume Ontario tax rate for estimation
-    const taxesAreEstimated = totals.totalTaxes === 0;
-    const finalTaxes = !taxesAreEstimated ? totals.totalTaxes : estimatedTax;
     const finalTaxesLabel = !taxesAreEstimated ? getTerm('taxes',Constants.SUMMARY_INFO) : `${getTerm('taxes',Constants.SUMMARY_INFO)} (estimated)`;
 
     const taxesSection = <SummaryLineNonExpandable
@@ -128,8 +116,6 @@ export function SummaryTotals(props: ISummaryTotals): React.ReactElement {
         name={finalTaxesLabel}
         total={finalTaxes}
     />;
-
-    const finalTotal = taxesAreEstimated ? totals.totalSubtotal + shipping.amount + estimatedTax : totals.totalOrder;
 
     const totalSection = <SummaryLineNonExpandable
         eventName={Constants.TOTAL_EVENT}
