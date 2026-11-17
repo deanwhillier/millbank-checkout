@@ -21,8 +21,8 @@ describe('Testing OrderTotal component', () => {
         useAppSelectorMock.mockImplementation((selector) => selector({data: {application_state: {display_exchange_rate: undefined}}} as never));
     });
 
-    const mockTotal = (finalTotal: number) => useGetSummaryTotalMock.mockReturnValue({
-        totals: {} as never, shipping: {} as never, taxesAreEstimated: false, finalTaxes: 0, finalTotal
+    const mockTotal = (finalTotal: number, taxesAreEstimated = false) => useGetSummaryTotalMock.mockReturnValue({
+        totals: {} as never, shipping: {} as never, taxesAreEstimated, finalTaxes: 0, finalTotal
     });
 
     test('renders label, taxes note and the summary total', () => {
@@ -31,6 +31,20 @@ describe('Testing OrderTotal component', () => {
         expect(container.getElementsByClassName('order-total__title')[0].textContent).toBe('Order total');
         expect(container.getElementsByClassName('order-total__note')[0].textContent).toBe('(Including taxes)');
         expect(getByTestId('order-total-price').textContent).toContain('625.95');
+    });
+
+    test('says estimated taxes while taxes are estimated', () => {
+        mockTotal(62595, true);
+        const {container} = render(<OrderTotal/>);
+        expect(container.getElementsByClassName('order-total__note')[0].textContent).toBe('(Including estimated taxes)');
+    });
+
+    test('shows the currency code like the summary Total line', () => {
+        mockTotal(62595);
+        useGetCurrencyInformationMock.mockReturnValue({currency: 'CAD', currencySymbol: '$', formattedPrice: 'CAD ${{amount}}'});
+        const {getByTestId} = render(<OrderTotal/>);
+        expect(useGetCurrencyInformationMock).toHaveBeenCalledWith(true);
+        expect(getByTestId('order-total-price').textContent).toBe('CAD $625.95');
     });
 
     test('applies the display exchange rate like the summary lines', () => {

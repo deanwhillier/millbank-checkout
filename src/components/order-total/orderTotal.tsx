@@ -5,12 +5,15 @@ import {getTerm} from 'src/utils';
 import {useAppSelector, useGetCurrencyInformation, useGetSummaryTotal} from 'src/hooks';
 
 export function OrderTotal(): React.ReactElement {
-    const {finalTotal} = useGetSummaryTotal();
-    const {formattedPrice} = useGetCurrencyInformation();
+    const {finalTotal, taxesAreEstimated} = useGetSummaryTotal();
+    // showCurrency=true: same currency-code format as the summary Total line
+    const {formattedPrice} = useGetCurrencyInformation(true);
     const displayExchangeRate: number = useAppSelector((state) => state.data.application_state?.display_exchange_rate);
     const displayTotal = displayExchangeRate ? displayExchangeRate * finalTotal : finalTotal;
     const label = getTerm('order_total', Constants.SUMMARY_INFO, undefined, 'Order total');
-    const taxesNote = getTerm('including_taxes', Constants.SUMMARY_INFO, undefined, '(Including taxes)');
+    const taxesNote = taxesAreEstimated
+        ? getTerm('including_estimated_taxes', Constants.SUMMARY_INFO, undefined, '(Including estimated taxes)')
+        : getTerm('including_taxes', Constants.SUMMARY_INFO, undefined, '(Including taxes)');
 
     return (
         <div className={'order-total'} data-testid={'order-total'}>
