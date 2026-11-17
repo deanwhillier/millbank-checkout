@@ -1,6 +1,6 @@
 import {IInitialState} from 'src/types/globalInterface';
 import {IError} from 'src/types/translationInterfaces';
-import {IInitializeOrderResponse} from '@boldcommerce/checkout-frontend-library';
+import {IInitializeOrderResponse, IShippingLine} from '@boldcommerce/checkout-frontend-library';
 
 export interface IPaymentsSummaryClasses {
     container: string,
@@ -48,6 +48,14 @@ export interface ITotals {
     totalTaxes: number,
     totalFees: number,
     totalAdditionalFees: number
+}
+
+export interface IUseGetSummaryTotal {
+    totals: ITotals,
+    shipping: IShippingLine,
+    taxesAreEstimated: boolean,
+    finalTaxes: number,
+    finalTotal: number
 }
 
 export interface IOverlay{

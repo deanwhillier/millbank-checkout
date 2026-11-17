@@ -67,6 +67,7 @@ export * from './useGetShippingLines';
 export * from './useGetShippingLinesData';
 export * from './useGetShippingLinesDataNoDebounce';
 export * from './useGetShopUrlFromShopAlias';
+export * from './useGetSummaryTotal';
 export * from './useGetSupportedLanguageData';
 export * from './useGetTaxes';
 export * from './useGetThankYou';

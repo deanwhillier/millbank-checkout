@@ -48,6 +48,7 @@ export * from './logged-in-customer/loggedInCustomer';
 export * from './login-prompt/loginPrompt';
 export * from './navigation-heading/navigationHeading';
 export * from './order-recap/orderRecap';
+export * from './order-total/orderTotal';
 export * from './out-of-stock/outOfStock';
 export * from './overlay/overlay';
 export * from './payment/payment';
