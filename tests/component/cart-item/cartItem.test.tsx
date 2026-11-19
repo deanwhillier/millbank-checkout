@@ -145,4 +145,51 @@ describe('Testing CartItem component', () => {
         onCommit(2);
         expect(onUpdateQuantity).toBeCalledTimes(2);
     });
+
+    describe('promo reward types', () => {
+        const buildPromoItem = (rewardType: string, priceOverride: number | null = 0): ILineItem => ({
+            ...lineItem,
+            product_data: {
+                ...lineItem.product_data,
+                properties: {
+                    product_details: encodeURI(JSON.stringify({
+                        sku: 'SKU-1',
+                        price: {base: 5000, discount: 4000},
+                        promo: {id: 1, layerId: 1, layerTypeName: 'x', priceOverride, completed: true, rewardType}
+                    }))
+                }
+            }
+        });
+        const renderPromo = (rewardType: string, priceOverride: number | null = 0) => {
+            getLineItemPropertiesForDisplayMock.mockReturnValue([]);
+            return render(<CartItem line_item={buildPromoItem(rewardType, priceOverride)}/>);
+        };
+
+        test.each([
+            ['gift_card', 'Free gift card with purchase', 'cart-item__gift-card'],
+            ['swag', 'Free swag with purchase', 'cart-item__swag'],
+            ['rebate', 'Rebate with purchase', 'cart-item__rebate'],
+        ])('%s shows label, class, override price and no comparison price', (rewardType, label, className) => {
+            const {container, getByText} = renderPromo(rewardType, 700);
+            const el = container.getElementsByClassName('cart-item')[0];
+            expect(getByText(label)).toBeTruthy();
+            expect(el.classList.contains(className)).toBe(true);
+            expect(el.classList.contains('cart-item__reward')).toBe(true);
+            const price = container.getElementsByClassName('cart-item__price')[0];
+            expect(price.textContent).toContain(`$${(7 * lineItem.product_data.quantity).toFixed(2)}`);
+            expect(price.textContent).not.toContain('50.00');
+            expect(price.textContent).not.toContain('40.00');
+        });
+
+        test('gift_card and swag without priceOverride price like rebate', () => {
+            const texts = ['rebate', 'gift_card', 'swag'].map((type) => {
+                const {container, unmount} = renderPromo(type, null);
+                const text = container.getElementsByClassName('cart-item__price')[0].textContent;
+                unmount();
+                return text;
+            });
+            expect(texts[1]).toBe(texts[0]);
+            expect(texts[2]).toBe(texts[0]);
+        });
+    });
 });
