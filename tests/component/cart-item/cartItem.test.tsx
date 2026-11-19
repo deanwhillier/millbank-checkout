@@ -147,22 +147,26 @@ describe('Testing CartItem component', () => {
     });
 
     describe('promo reward types', () => {
-        const buildPromoItem = (rewardType: string, priceOverride: number | null = 0): ILineItem => ({
+        const buildPromoItem = (
+            rewardType: string,
+            priceOverride: number | null,
+            price: {base: number, discount: number | null} = {base: 5000, discount: 4000}
+        ): ILineItem => ({
             ...lineItem,
             product_data: {
                 ...lineItem.product_data,
                 properties: {
                     product_details: encodeURI(JSON.stringify({
                         sku: 'SKU-1',
-                        price: {base: 5000, discount: 4000},
+                        price,
                         promo: {id: 1, layerId: 1, layerTypeName: 'x', priceOverride, completed: true, rewardType}
                     }))
                 }
             }
         });
-        const renderPromo = (rewardType: string, priceOverride: number | null = 0) => {
+        const renderPromo = (rewardType: string, priceOverride: number | null, price?: {base: number, discount: number | null}) => {
             getLineItemPropertiesForDisplayMock.mockReturnValue([]);
-            return render(<CartItem line_item={buildPromoItem(rewardType, priceOverride)}/>);
+            return render(<CartItem line_item={buildPromoItem(rewardType, priceOverride, price)}/>);
         };
 
         test.each([
@@ -179,6 +183,28 @@ describe('Testing CartItem component', () => {
             expect(price.textContent).toContain(`$${(7 * lineItem.product_data.quantity).toFixed(2)}`);
             expect(price.textContent).not.toContain('50.00');
             expect(price.textContent).not.toContain('40.00');
+        });
+
+        test.each(['gift_card', 'swag'])('%s with priceOverride 0 shows $0.00 and no comparison price', (rewardType) => {
+            const {container} = renderPromo(rewardType, 0);
+            const price = container.getElementsByClassName('cart-item__price')[0];
+            expect(price.textContent).toContain('$0.00');
+            expect(price.textContent).not.toContain('50.00');
+            expect(price.textContent).not.toContain('40.00');
+        });
+
+        test.each(['gift_card', 'swag'])('%s with rebate-style payload and priceOverride 0 shows $0.00', (rewardType) => {
+            const {container} = renderPromo(rewardType, 0, {base: -5000, discount: null});
+            const price = container.getElementsByClassName('cart-item__price')[0];
+            expect(price.textContent).toContain('$0.00');
+            expect(price.textContent).not.toContain('50.00');
+        });
+
+        test('rebate with its real payload (negative base and override, null discount) renders the override, unchanged', () => {
+            const {container} = renderPromo('rebate', -2000, {base: -5000, discount: null});
+            const price = container.getElementsByClassName('cart-item__price')[0];
+            expect(price.textContent).toContain('$-20.00');
+            expect(price.textContent).not.toContain('50.00');
         });
 
         test('gift_card and swag without priceOverride price like rebate', () => {

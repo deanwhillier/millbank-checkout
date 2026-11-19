@@ -60,14 +60,16 @@ export function CartItem({line_item, quantityDisabled, onUpdateQuantity, showLin
     const hasPromoOverride = promoOverrideAmount !== undefined && promoOverrideAmount !== null;
     const isPromoDiscountType = productDetails.promo?.rewardType === 'discount';
     // gift card and swag rewards are priced like rebates
-    const isPromoRebateType = ['rebate', 'gift_card', 'swag'].includes(productDetails.promo?.rewardType || '');
+    const promoRewardType = productDetails.promo?.rewardType;
+    const isPromoRebateType = promoRewardType === 'rebate' || promoRewardType === 'gift_card' || promoRewardType === 'swag';
 
     let effectivePrice: number;
     let comparisonPrice: number | undefined;
     switch(true) {
         // rebate, gift card and swag promos never show a comparison price
         case isPromoRebateType && hasPromoOverride:
-            effectivePrice = promoOverrideAmount || discountAmount || baseAmount || 0;
+            // the override is used as-is so an override of 0 (gift card, swag) shows $0
+            effectivePrice = promoOverrideAmount ?? 0;
             comparisonPrice = undefined;
             break;
         // discount promos never show a promo override price
