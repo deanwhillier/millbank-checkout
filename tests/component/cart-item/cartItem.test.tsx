@@ -200,6 +200,18 @@ describe('Testing CartItem component', () => {
             expect(price.textContent).not.toContain('50.00');
         });
 
+        test.each([
+            ['gift_card', 'Free gift card with purchase'],
+            ['swag', 'Free swag with purchase'],
+        ])('%s with the millbank-api payload (base 0, discount null, override 0) shows label and $0.00', (rewardType, label) => {
+            const {container, getByText} = renderPromo(rewardType, 0, {base: 0, discount: null});
+            expect(getByText(label)).toBeTruthy();
+            const price = container.getElementsByClassName('cart-item__price')[0];
+            expect(price.textContent).toContain('$0.00');
+            // no comparison price: only the one amount is rendered
+            expect(price.textContent?.match(/\$/g)?.length).toBe(1);
+        });
+
         test('rebate with its real payload (negative base and override, null discount) renders the override, unchanged', () => {
             const {container} = renderPromo('rebate', -2000, {base: -5000, discount: null});
             const price = container.getElementsByClassName('cart-item__price')[0];
