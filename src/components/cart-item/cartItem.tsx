@@ -107,7 +107,7 @@ export function CartItem({line_item, quantityDisabled, onUpdateQuantity, showLin
             rewardLabel = 'Free gift card with purchase';
             break;
         case 'swag':
-            rewardLabel = 'Free swag with purchase';
+            rewardLabel = 'Free product with purchase';
             break;
         case 'discount':
             rewardLabel = 'Discount applied';

@@ -171,7 +171,7 @@ describe('Testing CartItem component', () => {
 
         test.each([
             ['gift_card', 'Free gift card with purchase', 'cart-item__gift-card'],
-            ['swag', 'Free swag with purchase', 'cart-item__swag'],
+            ['swag', 'Free product with purchase', 'cart-item__swag'],
             ['rebate', 'Rebate with purchase', 'cart-item__rebate'],
         ])('%s shows label, class, override price and no comparison price', (rewardType, label, className) => {
             const {container, getByText} = renderPromo(rewardType, 700);
@@ -202,7 +202,7 @@ describe('Testing CartItem component', () => {
 
         test.each([
             ['gift_card', 'Free gift card with purchase'],
-            ['swag', 'Free swag with purchase'],
+            ['swag', 'Free product with purchase'],
         ])('%s with the millbank-api payload (base 0, discount null, override 0) shows label and $0.00', (rewardType, label) => {
             const {container, getByText} = renderPromo(rewardType, 0, {base: 0, discount: null});
             expect(getByText(label)).toBeTruthy();
