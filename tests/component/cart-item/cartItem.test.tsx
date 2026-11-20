@@ -171,26 +171,50 @@ describe('Testing CartItem component', () => {
 
         test.each([
             ['gift_card', 'Free gift card with purchase', 'cart-item__gift-card'],
-            ['swag', 'Free product with purchase', 'cart-item__swag'],
+            ['swag', 'Free with purchase', 'cart-item__swag'],
             ['rebate', 'Rebate with purchase', 'cart-item__rebate'],
         ])('%s shows label, class, override price and no comparison price', (rewardType, label, className) => {
-            const {container, getByText} = renderPromo(rewardType, 700);
+            const {container, getByText} = renderPromo(rewardType, 700, {base: 0, discount: null});
             const el = container.getElementsByClassName('cart-item')[0];
             expect(getByText(label)).toBeTruthy();
             expect(el.classList.contains(className)).toBe(true);
             expect(el.classList.contains('cart-item__reward')).toBe(true);
             const price = container.getElementsByClassName('cart-item__price')[0];
             expect(price.textContent).toContain(`$${(7 * lineItem.product_data.quantity).toFixed(2)}`);
-            expect(price.textContent).not.toContain('50.00');
-            expect(price.textContent).not.toContain('40.00');
         });
 
-        test.each(['gift_card', 'swag'])('%s with priceOverride 0 shows $0.00 and no comparison price', (rewardType) => {
-            const {container} = renderPromo(rewardType, 0);
+        test('rebate never shows a comparison price, whatever the base', () => {
+            const {container} = renderPromo('rebate', 700);
             const price = container.getElementsByClassName('cart-item__price')[0];
-            expect(price.textContent).toContain('$0.00');
+            expect(price.textContent).toContain(`$${(7 * lineItem.product_data.quantity).toFixed(2)}`);
             expect(price.textContent).not.toContain('50.00');
             expect(price.textContent).not.toContain('40.00');
+            expect(container.getElementsByClassName('stx-price__amount--inactive').length).toBe(0);
+        });
+
+        test.each([
+            ['gift_card', 'cart-item__gift-card'],
+            ['swag', 'cart-item__swag'],
+        ])('%s with base > 0 and override 0 shows the list price struck through beside the $0.00 amount', (rewardType, className) => {
+            const {container} = renderPromo(rewardType, 0, {base: 5000, discount: null});
+            const quantity = lineItem.product_data.quantity;
+            const amount = container.querySelector(`.${className} .stx-price__amount:not(.stx-price__amount--inactive)`);
+            const comparison = container.querySelector(`.${className} .stx-price__amount--inactive`);
+            expect(amount?.textContent).toContain('$0.00');
+            expect(comparison?.textContent).toContain(`$${(50 * quantity).toFixed(2)}`);
+        });
+
+        test.each([
+            ['gift_card', 0],
+            ['swag', 0],
+            ['gift_card', -5000],
+            ['swag', -5000],
+        ])('%s with base %s shows a single $0.00 amount and no comparison price', (rewardType, base) => {
+            const {container} = renderPromo(rewardType, 0, {base, discount: null});
+            const price = container.getElementsByClassName('cart-item__price')[0];
+            expect(price.textContent).toContain('$0.00');
+            expect(price.textContent?.match(/\$/g)?.length).toBe(1);
+            expect(container.getElementsByClassName('stx-price__amount--inactive').length).toBe(0);
         });
 
         test.each(['gift_card', 'swag'])('%s with rebate-style payload and priceOverride 0 shows $0.00', (rewardType) => {
@@ -202,7 +226,7 @@ describe('Testing CartItem component', () => {
 
         test.each([
             ['gift_card', 'Free gift card with purchase'],
-            ['swag', 'Free product with purchase'],
+            ['swag', 'Free with purchase'],
         ])('%s with the millbank-api payload (base 0, discount null, override 0) shows label and $0.00', (rewardType, label) => {
             const {container, getByText} = renderPromo(rewardType, 0, {base: 0, discount: null});
             expect(getByText(label)).toBeTruthy();

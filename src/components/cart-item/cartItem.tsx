@@ -61,16 +61,17 @@ export function CartItem({line_item, quantityDisabled, onUpdateQuantity, showLin
     const isPromoDiscountType = productDetails.promo?.rewardType === 'discount';
     // gift card and swag rewards are priced like rebates
     const promoRewardType = productDetails.promo?.rewardType;
+    const isPromoListPriceType = promoRewardType === 'gift_card' || promoRewardType === 'swag';
     const isPromoRebateType = promoRewardType === 'rebate' || promoRewardType === 'gift_card' || promoRewardType === 'swag';
 
     let effectivePrice: number;
     let comparisonPrice: number | undefined;
     switch(true) {
-        // rebate, gift card and swag promos never show a comparison price
+        // rebate, gift card and swag promos show the override as-is (an override of 0 renders as Free via CSS)
         case isPromoRebateType && hasPromoOverride:
-            // the override is used as-is so an override of 0 (gift card, swag) shows $0
             effectivePrice = promoOverrideAmount ?? 0;
-            comparisonPrice = undefined;
+            // rebates never show a comparison price; gift card and swag show the list price when it is above 0
+            comparisonPrice = isPromoListPriceType && baseAmount && baseAmount > 0 ? baseAmount : undefined;
             break;
         // discount promos never show a promo override price
         case isPromoDiscountType:
@@ -107,7 +108,7 @@ export function CartItem({line_item, quantityDisabled, onUpdateQuantity, showLin
             rewardLabel = 'Free gift card with purchase';
             break;
         case 'swag':
-            rewardLabel = 'Free product with purchase';
+            rewardLabel = 'Free with purchase';
             break;
         case 'discount':
             rewardLabel = 'Discount applied';
