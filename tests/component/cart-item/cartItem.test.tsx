@@ -212,6 +212,18 @@ describe('Testing CartItem component', () => {
             expect(price.textContent?.match(/\$/g)?.length).toBe(1);
         });
 
+        test.each([
+            ['gift_card', 'cart-item__gift-card'],
+            ['swag', 'cart-item__swag'],
+        ])('%s amount sits under %s so cartItem.css can show Free; rebate does not', (rewardType, className) => {
+            const {container} = renderPromo(rewardType, 0, {base: 0, discount: null});
+            const amount = container.querySelector(`.${className} .stx-price__amount:not(.stx-price__amount--inactive)`);
+            expect(amount).toBeTruthy();
+            expect(amount?.textContent).toContain('$0.00');
+            const rebate = renderPromo('rebate', -2000, {base: -5000, discount: null});
+            expect(rebate.container.querySelector('.cart-item__gift-card, .cart-item__swag, .cart-item__free-gift')).toBeNull();
+        });
+
         test('rebate with its real payload (negative base and override, null discount) renders the override, unchanged', () => {
             const {container} = renderPromo('rebate', -2000, {base: -5000, discount: null});
             const price = container.getElementsByClassName('cart-item__price')[0];

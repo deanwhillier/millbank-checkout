@@ -249,11 +249,15 @@ li {
     z-index: 1;
 }
 
-.cart-item__free-gift .stx-price__amount:not(.stx-price__amount--inactive) {
+.cart-item__free-gift .stx-price__amount:not(.stx-price__amount--inactive),
+.cart-item__gift-card .stx-price__amount:not(.stx-price__amount--inactive),
+.cart-item__swag .stx-price__amount:not(.stx-price__amount--inactive) {
     position: relative;
     color: transparent !important;
 }
-.cart-item__free-gift .stx-price__amount:not(.stx-price__amount--inactive)::after {
+.cart-item__free-gift .stx-price__amount:not(.stx-price__amount--inactive)::after,
+.cart-item__gift-card .stx-price__amount:not(.stx-price__amount--inactive)::after,
+.cart-item__swag .stx-price__amount:not(.stx-price__amount--inactive)::after {
     content: 'Free';
     color: #2C8563;
     text-transform: uppercase;
