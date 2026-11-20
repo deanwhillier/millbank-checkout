@@ -50,7 +50,7 @@ export function CartItem({line_item, quantityDisabled, onUpdateQuantity, showLin
             layerTypeName: string | null,
             priceOverride: number | null,
             completed: boolean | null,
-            rewardType: 'free' | 'reduced' | 'rebate' | 'discount' | null
+            rewardType: 'free' | 'reduced' | 'rebate' | 'gift_card' | 'swag' | 'discount' | null
         }
     } = typeof product_data.properties.product_details === 'string' ? JSON.parse(decodeURI(product_data.properties.product_details || '{}')) : product_data.properties.product_details || {};
 
@@ -59,14 +59,17 @@ export function CartItem({line_item, quantityDisabled, onUpdateQuantity, showLin
     const promoOverrideAmount = productDetails.promo?.priceOverride;
     const hasPromoOverride = promoOverrideAmount !== undefined && promoOverrideAmount !== null;
     const isPromoDiscountType = productDetails.promo?.rewardType === 'discount';
-    const isPromoRebateType = productDetails.promo?.rewardType === 'rebate';
+    // gift card and swag rewards are priced like rebates
+    const promoRewardType = productDetails.promo?.rewardType;
+    const isPromoRebateType = promoRewardType === 'rebate' || promoRewardType === 'gift_card' || promoRewardType === 'swag';
 
     let effectivePrice: number;
     let comparisonPrice: number | undefined;
     switch(true) {
-        // rebate promos never show a comparison price
+        // rebate, gift card and swag promos never show a comparison price
         case isPromoRebateType && hasPromoOverride:
-            effectivePrice = promoOverrideAmount || discountAmount || baseAmount || 0;
+            // the override is used as-is so an override of 0 (gift card, swag) shows $0
+            effectivePrice = promoOverrideAmount ?? 0;
             comparisonPrice = undefined;
             break;
         // discount promos never show a promo override price
@@ -100,6 +103,12 @@ export function CartItem({line_item, quantityDisabled, onUpdateQuantity, showLin
         case 'rebate':
             rewardLabel = 'Rebate with purchase';
             break;
+        case 'gift_card':
+            rewardLabel = 'Free gift card with purchase';
+            break;
+        case 'swag':
+            rewardLabel = 'Free product with purchase';
+            break;
         case 'discount':
             rewardLabel = 'Discount applied';
             break;
@@ -116,6 +125,8 @@ export function CartItem({line_item, quantityDisabled, onUpdateQuantity, showLin
         {'cart-item__free-gift': productDetails?.promo?.rewardType === 'free'},
         {'cart-item__reduced-price': productDetails?.promo?.rewardType === 'reduced'},
         {'cart-item__rebate': productDetails?.promo?.rewardType === 'rebate'},
+        {'cart-item__gift-card': productDetails?.promo?.rewardType === 'gift_card'},
+        {'cart-item__swag': productDetails?.promo?.rewardType === 'swag'},
         {'cart-item__discount': productDetails?.promo?.rewardType === 'discount'}
     );
 
