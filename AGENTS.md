@@ -2,10 +2,12 @@
 
 Millbank's checkout app: a React/Redux single-page checkout built on `@boldcommerce/checkout-frontend-library@0.66.0` (pinned, from npm). It has no backend of its own; it calls Bold's Checkout APIs (and EPS) from the browser. The Millbank storefront builds it and serves it as a static bundle.
 
+Cross-project rules (all Millbank repos) live in the Millbank root repo, `deanwhillier/millbank`. If this repo's main clone sits inside a checkout of it (the parent folder holds `projects.json` and `AGENTS.md`), read that `AGENTS.md`; otherwise there's nothing more to read.
+
 ## Repo and workflow
 
-- GitHub: `deanwhillier/millbank-checkout` (public for now, so anything committed or written in a PR is world-readable; the repo owner may make it private again. While it's public, never describe security findings or vulnerabilities in issues, PRs or commit messages. Detached from Bold's fork network; originally `bold-commerce/checkout-experience-templates`). Local clone: `~/Projects/millbank/checkout`. Base branch: `main`.
-- One worktree per task at `~/.herdr/worktrees/checkout/<branch>`, on a feature branch. Never edit on `main`.
+- GitHub: `deanwhillier/millbank-checkout` (public for now, so anything committed or written in a PR is world-readable; the repo owner may make it private again. While it's public, never describe security findings or vulnerabilities in issues, PRs or commit messages. Detached from Bold's fork network; originally `bold-commerce/checkout-experience-templates`). Local clone: `<workspace>/checkout`, where `<workspace>` is the Millbank root repo folder. Base branch: `main`.
+- One worktree per task at `<workspace>/.worktrees/checkout/<branch>`, on a feature branch. Never edit on `main`.
 - Feature branch -> PR. Rebase onto `main`, don't merge `main` in. Nothing goes to `main` directly. The repo owner merges every PR.
 - Every change gets a security review, then QA, before merge.
 
