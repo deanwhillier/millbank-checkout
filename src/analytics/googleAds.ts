@@ -60,16 +60,11 @@ export function formatGoogleAdsUserData(customer: ICustomer, addresses: IAddress
     return userData;
 }
 
-// BOLD gives order-level discounts no type field, so a shipping discount (e.g. free shipping) is
-// recognised by its code/text. Revisit if the live payload shows a better marker.
-function isShippingDiscount(discount: IDiscount): boolean {
-    return /shipping/i.test(`${discount.code ?? ''} ${discount.text ?? ''}`);
-}
-
 /**
  * Conversion value in dollars (a number, 2 dp, never negative): the sum of qty x unit price for
- * product lines, minus product/order discounts. Line-item fees, tax and shipping are excluded and
- * shipping-only discounts do not reduce it. Amounts from BOLD are in cents.
+ * product lines, minus product/order discounts. Line-item fees, tax and shipping are excluded.
+ * Shipping discounts are excluded too, because BOLD keeps them in `shipping.discounts`, which this
+ * helper never sees. Amounts from BOLD are in cents.
  */
 export function getGoogleAdsConversionValue(lineItems: Array<ILineItem>, discounts: Array<IDiscount>): number {
     const subtotal = (lineItems ?? []).reduce((sum, item) => {
@@ -78,7 +73,6 @@ export function getGoogleAdsConversionValue(lineItems: Array<ILineItem>, discoun
         return sum + quantity * price;
     }, 0);
     const discountTotal = (discounts ?? [])
-        .filter(discount => !isShippingDiscount(discount))
         .reduce((sum, discount) => sum + (Number(discount.value) || 0), 0);
 
     return Math.max(0, Math.round(subtotal - discountTotal)) / 100;
@@ -99,7 +93,11 @@ export function orderCompleteForGoogleAds(
             return;
         }
 
-        window['gtag']('set', 'user_data', formatGoogleAdsUserData(customer, addresses));
+        // Skip an empty user_data object; the conversion itself is still sent.
+        const userData = formatGoogleAdsUserData(customer, addresses);
+        if (Object.keys(userData).length > 0) {
+            window['gtag']('set', 'user_data', userData);
+        }
         window['gtag']('event', 'conversion', {
             send_to: `${adsId}/${purchaseLabel}`,
             value: getGoogleAdsConversionValue(lineItems, discounts),

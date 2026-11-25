@@ -144,13 +144,12 @@ describe('Google Ads purchase conversion', () => {
             expect(getGoogleAdsConversionValue([makeLine(5000, 1, [{amount: 700, name: 'Eco fee'}])], [])).toBe(50);
         });
 
-        test('ignores tax and shipping (the helper never sees them)', () => {
-            expect(getGoogleAdsConversionValue([makeLine(10000)], [])).toBe(100);
+        test('subtracts a rebate (negative-price) line from the value', () => {
+            expect(getGoogleAdsConversionValue([makeLine(10000), makeLine(-2000)], [])).toBe(80);
         });
 
-        test('a shipping-only discount does not reduce the value', () => {
-            expect(getGoogleAdsConversionValue([makeLine(10000)], [makeDiscount(1045, 'FREESHIP', 'Free shipping')])).toBe(100);
-            expect(getGoogleAdsConversionValue([makeLine(10000)], [makeDiscount(1000), makeDiscount(1045, 'SHIPPING', 'Free shipping')])).toBe(90);
+        test('a rebate larger than the subtotal clamps to 0', () => {
+            expect(getGoogleAdsConversionValue([makeLine(1000), makeLine(-5000)], [])).toBe(0);
         });
 
         test('is clamped at 0', () => {
@@ -185,6 +184,21 @@ describe('Google Ads purchase conversion', () => {
                 transaction_id: 'order-123',
             }]);
             expect(typeof gtagMock.mock.calls[1][2].value).toBe('number');
+        });
+
+        test('skips set user_data when the mapper returns an empty object, but still sends the conversion', () => {
+            const emptyAddresses = makeAddresses({
+                first_name: '', last_name: '', address_line_1: '', city: '', province_code: '', postal_code: '', country_code: '', phone_number: '',
+            });
+            const emptyCustomer = {...customer, first_name: '', last_name: '', email_address: ''} as ICustomer;
+            orderCompleteForGoogleAds(emptyCustomer, emptyAddresses, [makeLine(5000, 2)], 'CAD', [makeDiscount(1000)], 'order-123');
+            expect(gtagMock).toHaveBeenCalledTimes(1);
+            expect(gtagMock.mock.calls[0]).toEqual(['event', 'conversion', {
+                send_to: 'AW-TEST/test-label',
+                value: 90,
+                currency: 'CAD',
+                transaction_id: 'order-123',
+            }]);
         });
 
         test.each([
