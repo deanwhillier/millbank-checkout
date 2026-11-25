@@ -6,6 +6,7 @@ import {
     sendPageViewForGoogleTagManager,
     sendPageViewForFacebookPixel,
     orderCompleteForGoogleAnalytics,
+    orderCompleteForGoogleAds,
     orderCompleteForFacebookPixel,
     orderCompleteForCustomAnalytics,
     orderCompleteTrackingVariables,
@@ -37,6 +38,7 @@ export function sendPageView(page: string, step?: number): void {
 export function orderCompleteAnalytics(customer:ICustomer, addresses: IAddressType, lineItems: Array<ILineItem>, currency: string, totals: ITotals, shipping: IShippingLine, id: string, discounts: Array<IDiscount>): void {
     orderCompleteTrackingVariables(customer, addresses, lineItems, currency, totals, shipping, id, discounts);
     orderCompleteForGoogleAnalytics(lineItems, currency, totals, shipping, id, discounts);
+    orderCompleteForGoogleAds(customer, addresses, lineItems, currency, discounts, id);
     orderCompleteForFacebookPixel(lineItems, currency, totals);
     orderCompleteForGoogleTagManager(lineItems, currency, totals, shipping, id, discounts);
     orderCompleteForCustomAnalytics();
