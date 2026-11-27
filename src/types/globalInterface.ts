@@ -33,6 +33,7 @@ declare global {
         bugsnagApiKey: string,
         enableConsole: boolean,
         fbq?: IFbq,
+        GOOGLE_ADS?: {id?: string, signupLabel?: string, purchaseLabel?: string},
         /* eslint-disable  @typescript-eslint/no-explicit-any */
         [key:string]: any,
     }
